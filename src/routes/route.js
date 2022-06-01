@@ -1,12 +1,25 @@
 const express = require('express');
-const externalModule = require('./logger')
+const externalModule = require('../logger/logger')
+const util2 = require('../util/helper')
+const validator3 = require('../validator/formatter')
+
 
 const router = express.Router();
 
 router.get('/test-me', function (req, res) {
-    console.log('The constant in logger route has a value '+externalModule.endpoint)
-    console.log('The current batch is '+externalModule.batch)
-    externalModule.log()
+    console.log('Welcome to my application. I am '+externalModule.name)
+    console.log('and a part of FunctionUp '+externalModule.batch)
+    console.log('cohort.')
+
+    externalModule.welcome()
+    util2.printDate()
+    util2.printMonth()
+    util2.getBatchInfo()
+    console.log("string after Trimming :" + validator3.trimName)
+    console.log( "string after lower case :" + validator3.toLower)
+    console.log("string after upper case :" + validator3.toUpper)
+
+
     res.send('My first ever api!')
 });
 
