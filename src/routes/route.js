@@ -37,7 +37,8 @@ const router = express.Router();
               ]
           },
       ]
-
+    password : a28yy6Lumy3Zw5qy
+    
       
       router.post('/players', function (req, res) {
  
