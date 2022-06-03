@@ -136,7 +136,7 @@ router.get('/films/:filmId', function(req, res){
         let lastDigit= arr.pop()
         let consecutiveSum= lastDigit * (lastDigit+1) / 2
         let missingNumber= consecutiveSum - total
-      
+        console.log(missingNumber)
         res.send(  { data: missingNumber  }  );
       });
     router.get("/sol2", function (req, res) {
@@ -153,7 +153,7 @@ router.get('/films/:filmId', function(req, res){
         let lastDigit= arr.pop()
         let consecutiveSum= (len + 1) * (firstDigit+ lastDigit ) / 2
         let missingNumber= consecutiveSum - total
-       
+        console.log(missingNumber)
         res.send(  { data: missingNumber  }  );
       });
          
