@@ -5,7 +5,11 @@ const bookSchema = new mongoose.Schema( {
         type : String,
         required : true,
     }, 
-    authorName: String,
+    authorName: 
+    {
+    type : String,
+    required : true,
+    },
     tags: [String],
     price: {
        indianPrice: String,

@@ -61,7 +61,7 @@ const getXINRBooks= async function (req, res) {
 
     
  
-    let savedData= await BookModel.find({  "price.indianPrice": { $or : ["Rs500", "Rs200", "Rs100"]}   }).select()
+    let savedData= await BookModel.find({  "price.indianPrice": { $in : ["500", "200", "100"]}   }).select()
     res.send({msg: savedData})
     console.log(savedData)
   
