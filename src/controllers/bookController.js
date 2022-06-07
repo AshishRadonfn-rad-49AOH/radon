@@ -1,91 +1,60 @@
-const { count } = require("console")
-const BookModel= require("../models/bookModel")
-
-
-// create the following API’s (write logic in bookController and routes in routes):
-// createBook : to create a new entry..use this api to create 11+ entries in your collection
-
+const bookModel= require("../models/bookModel")
+const authorModel= require("../models/authorModel")
 
 const createBook= async function (req, res) {
+        const book = req.body
+        let savedBook = await bookModel.create(book)
+        res.send({ msg: savedBook })
+    
+}
+
+const createAuthor= async function (req, res) {
     let data= req.body
-
-    let savedData= await BookModel.create(data)
+    let savedData= await authorModel.create(data)
     res.send({msg: savedData})
 }
 
-
-// bookList : gives all the books- their bookName and authorName only 
-
-
-const bookList= async function (req, res) {
-    
-    let bookList= await BookModel.find().select({bookName : 1 , authorName : 1 , _id : 0})
-    res.send({msg: bookList})
-}
-
-// getBooksInYear: takes year as input in post request and gives list of all books published that year
-
-
-const getBooksInYear= async function (req, res) {
-
- 
-    let savedData= await BookModel.find({year : req.body.year} ).select()
-    res.send({msg: savedData})
-  
-}
-
-
-
-// getParticularBooks:- (this is a good one, make sincere effort to solve this) take any input and use it as a condition to fetch books that satisfy that condition
-// e.g if body had { name: “hi”} then you would fetch the books with this name
-// if body had { year: 2020} then you would fetch the books in this year
-// hence the condition will differ based on what you input in the request body
-
-
-
-
-
-const getParticularBooks= async function (req, res) {
-
-    let savedData= await BookModel.find(req.body).select()
-    res.send({msg: savedData})
+const getAllBooks= async function(req,res){
+   let fAuthor= await authorModel.find({author_name:"Chetan Bhagat"}).select({author_id : 1 })
+   //let id = fAuthor[0].author_id
+   let Books = await bookModel.find()
+   res.send({msg: Books})
  }
+   
 
+const getAuthorName = async function(req,res){
+    // let bookD =await bookModel.find({"name":"Two states" })
+    // let id = bookD[0].author_id
+    // let aName = await authorModel.find({"author_id":id }).select({author_name:1,_id:0})
+    // let bkname = bookD[0].name
+    // let updatedPrice = await bookModel.findOneAndUpdate(
+    //     {name: bkname},
+    //     {price:100},
+    //     {new:true}).select({price:1,_id:0})
 
+    let updatedPrice =await bookModel.findOneAndUpdate({"name":"Two states" },{$set:{price:100}},{new:true}).select({price:1,_id:0})
+    let BookD = await bookModel.find({"name":"Two states" })
+    let id = BookD[0].author_id
+    let aName = await authorModel.find({author_id:id}).select({author_name:1,_id:0})
+    res.send({msg: aName, updatedPrice:updatedPrice})
+}
 
+const authorNames = async function(req,res){
+    let fBooks =await bookModel.find( { price : { $gte: 50, $lte: 100} } ).select({ author_id :1})
+    let id =  fBooks.map(x => x.author_id)
+    let authorN = []
+    for(i=0;i<id.length;i++){
+        let x = id[i];
+        let newBooks = await authorModel.find({author_id:x}).select({author_name:1,_id:0})
+        authorN.push(newBooks)
+    }
 
- // getXINRBooks- request to return all books who have an Indian price tag of “100INR” or “200INR” or “500INR” 
-
-
-const getXINRBooks= async function (req, res) {
-
-    
- 
-    let savedData= await BookModel.find({  "price.indianPrice": { $in : ["500", "200", "100"]}   }).select()
-    res.send({msg: savedData})
-    console.log(savedData)
-  
-
+    res.send(authorN.flat())
 }
 
 
-
-// getRandomBooks - returns books that are available in stock or have more than 500 pages 
-
-
-const getRandomBooks= async function (req, res) {
-
- 
-    let savedData= await BookModel.find({ $or : [{ totalPages : {$gt : 500} }, {stockAvailable : true}  ] }).select()
-    res.send({msg: savedData})
-    console.log(savedData)
-  
-}
-
-
-module.exports.createBook= createBook
-module.exports.bookList= bookList
-module.exports.getBooksInYear= getBooksInYear
-module.exports.getParticularBooks= getParticularBooks
-module.exports.getXINRBooks=getXINRBooks
-module.exports.getRandomBooks = getRandomBooks
+module.exports.createBook=createBook
+module.exports.createAuthor=createAuthor
+module.exports.getAllBooks=getAllBooks
+module.exports.getAuthorName=getAuthorName
+module.exports.authorNames=authorNames
