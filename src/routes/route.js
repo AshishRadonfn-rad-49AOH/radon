@@ -12,6 +12,8 @@ router.post("/createAuthor", controller.createAuthor  )
 router.get("/getAllBooks", controller.getAllBooks  )
 router.post("/getAuthorName", controller.getAuthorName )
 router.post("/authorNames", controller.authorNames )
-
+//updated assignment
+router.get("/author/:authorbyid", controller.byAutherId )
+router.get('/reatingbookby50yold',controller.ageAuthor)
 
 module.exports = router;

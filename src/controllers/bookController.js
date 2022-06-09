@@ -40,17 +40,45 @@ const getAuthorName = async function(req,res){
 }
 
 const authorNames = async function(req,res){
-    let fBooks =await bookModel.find( { price : { $gte: 50, $lte: 100} } ).select({ author_id :1})
-    let id =  fBooks.map(x => x.author_id)
-    let authorN = []
-    for(i=0;i<id.length;i++){
-        let x = id[i];
-        let newBooks = await authorModel.find({author_id:x}).select({author_name:1,_id:0})
-        authorN.push(newBooks)
+    let fBooks =await bookModel.find( { price : { $gte: 50, $lte: 100} } ).select({ author_id :1, name:1})
+    let fAuthor =await authorModel.find().select({ author_id :1,author_name:1})
+    let data = [ ]
+    for(i=0;i<fAuthor.length;i++){
+       fBooks.forEach(element =>{
+      if(element.author_id == fAuthor[i].author_id){
+          data.push({"Author Name " : element.name, "Book Name ": fAuthor[i].author_name})
+      }
+
+    
+    })
     }
 
-    res.send(authorN.flat())
+    res.send({data})
 }
+
+//UPDATED ASSIGNMENT
+
+const byAutherId = async (req, res) => {
+    const Author_Id = req.params.Author_Id;
+    const bookName = await bookModel
+      .find({ author_id: Author_Id })
+      .select({ name: 1, _id: 0 });
+    res.send(bookName);
+  };
+
+  const ageAuthor = async (req, res) => {
+    const isOlder50yAuthor = await authorModel.find({age:{$gte : 50} }); // 2 array
+    const book =await bookModel.find(); // 4 array
+    const authorName = []
+      isOlder50yAuthor.forEach(ele =>{
+        book.forEach(item =>{
+          if( item.author_id === ele.author_id && item.ratings > 4 ){
+            authorName.push({author_age: ele.age ,author_name: ele.author_name})
+          }
+        })
+      })
+    res.send(authorName)
+  };
 
 
 module.exports.createBook=createBook
@@ -58,3 +86,6 @@ module.exports.createAuthor=createAuthor
 module.exports.getAllBooks=getAllBooks
 module.exports.getAuthorName=getAuthorName
 module.exports.authorNames=authorNames
+//updated assignment
+module.exports.byAutherId=byAutherId
+module.exports.ageAuthor=ageAuthor
