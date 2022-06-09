@@ -59,7 +59,7 @@ const authorNames = async function(req,res){
 //UPDATED ASSIGNMENT
 
 const byAutherId = async (req, res) => {
-    const Author_Id = req.params.Author_Id;
+    const Author_Id = req.params.authorbyid;
     const bookName = await bookModel
       .find({ author_id: Author_Id })
       .select({ name: 1, _id: 0 });
@@ -68,11 +68,12 @@ const byAutherId = async (req, res) => {
 
   const ageAuthor = async (req, res) => {
     const isOlder50yAuthor = await authorModel.find({age:{$gte : 50} }); // 2 array
+   // console.log(isOlder50yAuthor)
     const book =await bookModel.find(); // 4 array
     const authorName = []
       isOlder50yAuthor.forEach(ele =>{
         book.forEach(item =>{
-          if( item.author_id === ele.author_id && item.ratings > 4 ){
+          if( item.author_id === ele.author_id && item.rating >= 4 ){
             authorName.push({author_age: ele.age ,author_name: ele.author_name})
           }
         })
