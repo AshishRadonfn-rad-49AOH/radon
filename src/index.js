@@ -8,24 +8,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-mongoose.connect("mongodb+srv://functionup-cohort:G0Loxqc9wFEGyEeJ@cluster0.rzotr.mongodb.net/Pritesh8769811-DB?retryWrites=true&w=majority", {
+mongoose.connect("mongodb+srv://ashish2132:2vnf5TGDQgRP7ydu@cluster0.czfb8.mongodb.net/Ashish-middleware2", {
     useNewUrlParser: true
 })
 .then( () => console.log("MongoDb is connected"))
 .catch ( err => console.log(err) )
-
-app.use (
-    function (req, res, next) {
-        const currentDate=new Date()
-        console.log(currentDate)
-
-        let ip = require("ip")
-        console.log(ip.address())
-
-        console.log (req.path);
-        next();
-    }
-);
 
 app.use('/', route);
 
