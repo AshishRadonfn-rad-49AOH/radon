@@ -1,65 +1,56 @@
+const orderModel = require("../models/orderModel");
+const userModel = require("../models/userModel");
+const productModel = require("../models/productModel");
 
+const createOrder = async function (req, res) {
+  // creating new object to store result
+  const newOrder = {
+    ...req.body,
+    isFreeAppUser: req.isFreeAppUser,
+  };
 
+  if (!newOrder.userId) res.send("Please enter the user ID");
+  else if (!newOrder.productId) res.send("Please enter the Product ID");
 
+  // validating userID
+  let user = await userModel.findById(newOrder.userId);
+  if (!user) res.send("Entered user ID is not valid");
 
-const orderModel = require("../models/orderModel")
-const userModel = require("../models/userModel")
-const productModel = require("../models/productModel")
+  // validating productID
+  let product = await productModel.findById(newOrder.productId);
+  if (!product) res.send("Entered Product ID is not valid");
+  let response;
 
-const createOrder= async function(req,res){
-    const data=req.body
-    const user_id=req.body.userId
-    const product_id=req.body.productId
+  const date = new Date();
+  // converting date to MM/DD/YYYY format
+  newOrder["date"] = date.toLocaleDateString("en-US");
 
-    const isProduct= await productModel.find({_id:product_id}).select({_id:1})
-    const isUser= await userModel.find({_id:user_id}).select({_id:1})
+  // checking for isFreeAppUser value and updating amount accordingly
+  if (newOrder.isFreeAppUser === "true") {
+    newOrder["amount"] = 0;
+    response = await orderModel.create(newOrder);
+  } else {
+    amount = product.price;
+    if (amount > user.balance) res.send("Insufficient Balance");
+    else {
+      user = await userModel
+        .findById(newOrder.userId)
+        .updateOne({ $inc: { balance: -amount } });
 
-    if(isUser.length>0){
-        if(isProduct.length>0){
-            if(req.headers.isfreeappuser==true){
-                req.body.amount=0
-                req.body.isFreeAppUser=true
-                const createdOrder=await orderModel.create(data)
-                res.send({msg:createdOrder})
-            }else{
-                let orderAmount = req.body.amount
-
-                let userBalance = await userModel.find({_id:user_id}).select({balance:1,_id:0})
-                let productPrice = await productModel.find({_id:product_id}).select({price:1,_id:0})
-
-                userBalance=userBalance.map(x => x.balance)
-                userBalance= userBalance.join(" ")
-                userBalance=parseInt(userBalance)
-
-                productPrice=productPrice.map(x => x.price)
-                productPrice= productPrice.join(" ")
-                productPrice=parseInt(productPrice)
-
-                console.log(userBalance)
-                console.log(productPrice)
-
-                if(userBalance >= productPrice){
-                    req.body.amount = productPrice
-                    req.body.isFreeAppUser=false
-                    let updatedBalance= await userModel.findOneAndUpdate(
-                        {_id:user_id},
-                        {$inc:{balance:-productPrice}},
-                        {new:true})
-                    
-                    const createdOrder=await orderModel.create(data)
-                    res.send({msg:createdOrder})
-                }else{
-                    res.send({error:"the user doesn't have enough balance"})
-                }
-            }
-        }else{
-            res.send({error:"productId is invalid"})
-        }
-    }else{
-        res.send({error:"userId is invalid"})
+      newOrder["amount"] = amount;
+      response = await orderModel.create(newOrder);
     }
-}
 
+    res.send(response);
+  }
+};
 
+const getOrder = async function (req, res) {
+  let allOrders = await orderModel.find();
+  res.send({ allOrders });
+};
 
-module.exports.createOrder=createOrder
+module.exports = {
+  createOrder,
+  getOrder,
+};
