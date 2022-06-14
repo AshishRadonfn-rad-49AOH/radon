@@ -7,7 +7,7 @@ const createUser = async function (abcd, xyz) {
   //the second parameter is always the response
   let data = abcd.body;
   let savedData = await userModel.create(data);
-  console.log(abcd.newAtribute);
+  //console.log(abcd.newAtribute);
   xyz.send({ msg: savedData });
 };
 
@@ -31,7 +31,7 @@ const loginUser = async function (req, res) {
   let token = jwt.sign(
     {
       userId: user._id.toString(),
-      batch: "thorium",
+      batch: "radon",
       organisation: "FunctionUp",
     },
     "functionup-radon"
@@ -67,24 +67,29 @@ const getUserData = async function (req, res) {
 };
 
 const updateUser = async function (req, res) {
-// Do the same steps here:
-// Check if the token is present
-// Check if the token present is a valid token
-// Return a different error message in both these cases
 
   let userId = req.params.userId;
-  let user = await userModel.findById(userId);
-  //Return an error if no user with the given id exists in the db
+  let user = await userModel.findOne({userId});
+  if(!userId)
+    return res.send({ msg: "Enter id" })
   if (!user) {
     return res.send("No such user exists");
   }
 
   let userData = req.body;
-  let updatedUser = await userModel.findOneAndUpdate({ _id: userId }, userData);
-  res.send({ status: updatedUser, data: updatedUser });
+  let updatedUser = await userModel.findOneAndUpdate({ _id: user._id }, userData );
+  res.send({ status: true, data: updatedUser });
 };
 
+const deleteUser = async function(req,res){
+
+  let userId = req.params.userId;
+  let user = await userModel.findOne({userId});
+  let updatedUser = await userModel.findOneAndUpdate({ _id: user._id }, {$set:{isDeleted : true}},{new : true});
+  return res.send({status: true , msg : updatedUser})
+}
 module.exports.createUser = createUser;
 module.exports.getUserData = getUserData;
 module.exports.updateUser = updateUser;
 module.exports.loginUser = loginUser;
+module.exports.deleteUser = deleteUser
