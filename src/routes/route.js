@@ -7,7 +7,7 @@ router.get("/test-me", function (req, res) {
     res.send("My first ever api!")
 })
 
-router.post("/users", userController.createUser  )
+router.post("/users", userController.createUser)
 
 router.post("/login", userController.loginUser)
 
@@ -18,6 +18,6 @@ router.put("/users/:userId", mw.authenticate,mw.authorise ,  userController.upda
 
 router.delete("/users/:userId", mw.authenticate, mw.authorise, userController.deleteUser)
 
-router.post("/users/:userId/posts", mw.authenticate,mw.authorise, userController.postMessage)
+
 
 module.exports = router;
