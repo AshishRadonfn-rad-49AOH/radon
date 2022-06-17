@@ -1,22 +1,23 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const userController= require("../controllers/userController")
-const mw = require("../middlewares/auth.js")
+const cowinController = require('../controllers/cowinController')
+const weatherController = require('../controllers/weatherController')
+const memeController = require('../controllers/memeController')
 
-router.get("/test-me", function (req, res) {
-    res.send("My first ever api!")
-})
 
-router.post("/users", userController.createUser)
+router.get("/getStates", cowinController.getStates);
+router.get("/getDistrictsByStateId/:stateId", cowinController.getDistricts);
+router.get("/sessionByPin" , cowinController.getByPin)
+router.post("/generateOtp" , cowinController.getOtp)
+router.get("/getSessionByDistrictId" , cowinController.getSession)
 
-router.post("/login", userController.loginUser)
+router.get("/Weather" , weatherController.getWeather)
+router.get("/SortedCities" , weatherController.getSortedCities)
 
-//The userId is sent by front end
-router.get("/users/:userId", mw.authenticate,mw.authorise ,userController.getUserData)
 
-router.put("/users/:userId", mw.authenticate,mw.authorise ,  userController.updateUser)
+router.post("/getMeme" , memeController.getMeme)
 
-router.delete("/users/:userId", mw.authenticate, mw.authorise, userController.deleteUser)
+module.exports = router;
 
 
 
