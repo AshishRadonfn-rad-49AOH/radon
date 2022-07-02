@@ -38,7 +38,7 @@ const createCollege = async function (req, res) {
         message: "college fullname is required for creating a college doc ",
       });
     }
-    if (!/^[a-zA-Z][a-zA-Z ]+[a-zA-Z]+$/.test(data.fullName)) {
+    if (!/^[A-Za-z\s]{1,}[\,]{0,1}[A-Za-z\s]{0,}$/.test(data.fullName)) {
       return res
         .status(400)
         .send({ status: false, message: "plz enter valid full name ,dont use space between letters for college full name" });

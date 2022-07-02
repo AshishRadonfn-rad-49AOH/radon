@@ -16,7 +16,7 @@ const createIntern = async function(req, res){
             return res.status(400).send({status:false, message:"Candidate name is not empty"})
         }
         //candidate name validation
-        if(!/^[a-zA-Z][a-zA-Z ]+[a-zA-Z]+$/.test(data.name)){
+        if(!/^[a-zA-Z][a-zA-Z ]+[a-zA-Z]*$/.test(data.name)){
             return res.status(400).send({status:false, message:"Enter the valid name with title& don't use number or special character"})
         }
         if(!data.email){
@@ -44,11 +44,11 @@ const createIntern = async function(req, res){
         if(!data.collegeName){
             return res.status(400).send({status:false, message:"College name is required "})
         }
-        if( data.collegeName.length == 0 ){
-            return res.status(400).send({status:false, message:"Enter valid college id"})
+        if(data.collegeName == 0) {
+            return res.status(400).send({status:false, message:"Enter valid college name"})
         }
         let collegeName = data.collegeName.toUpperCase()
-        let isCollegeName =await collegeModel.findOne({name: collegeName})
+        let isCollegeName = await collegeModel.findOne({name: collegeName})
         if(!isCollegeName){
             return res.status(400).send({status:false, message:"your college is not registered with us "})
         }
@@ -61,7 +61,7 @@ const createIntern = async function(req, res){
             res.status(201).send({status:true, data: internCreated})
             
     } catch (error) {
-            res.status(500).send({status:false, msg: error.message})
+            res.status(500).send({status:false, message: error.message})
     }
 }
 
@@ -72,24 +72,24 @@ const getCollegeDetails = async function(req, res){
     try {
         let clgName = req.query.collegeName
         if(!clgName){
-            return res.status(400).send({status:false, message:" Please provide proper college name"})
+            return res.status(400).send({status:false, message:"Enter the college name first"})
         }
         let collegeName = req.query.collegeName.toUpperCase()
         let isValidCollege =await collegeModel.findOne({name: collegeName})
         if(!isValidCollege){
-            return res.status(400).send({status:false, message:"Invalid college name"})
+            return res.status(404).send({status:false, message:"Invalid college name"})
         }
         let getIntern =await internModel.find({collegeId: isValidCollege._id, isDeleted: false}).select({name: 1, mobile: 1, email: 1})
         if(getIntern.length == 0){
-            return res.status(400).send({status:false, message:"No intern found with this college details"})
+            return res.status(400).send({status:false, message:"No intern found with this details"})
         }
         const getAllIntern = {
             name: isValidCollege.name,
             fullName: isValidCollege.fullName,
             logoLink: isValidCollege.logoLink,
-            interns: getIntern
+            interests: getIntern
         }
-            res.status(201).send({satus: true, msg: getAllIntern})
+            res.status(200).send({satus: true, data: getAllIntern})
 
     } catch (error) {
             res.status(500).send({status:false, msg: error.message})
